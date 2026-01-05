@@ -7,13 +7,12 @@ from io import BytesIO
 from gtts import gTTS
 from openai import OpenAI
 
-# Inicializa o mixer com definições seguras para o Raspberry Pi
 pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
 
-# CONFIGURAÇÃO DE TELA (Fullscreen)
+# (Fullscreen)
 info = pygame.display.Info()
 LARGURA, ALTURA = info.current_w, info.current_h
 tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.FULLSCREEN)
@@ -27,25 +26,10 @@ BRANCO = (255, 255, 255)
 CINZA = (60, 60, 60)
 FUNDO = (15, 15, 20)
 CINZA_TEXTO_LABEL = (180, 180, 180) 
-AZUL_ESCURO_CUBE = (25, 40, 50) # Cor do cubo da logo na testa
 
-# Fontes (Usando SysFont para compatibilidade)
+# Fontes 
 fonte = pygame.font.SysFont("Arial", 36)
 fonte_pequena = pygame.font.SysFont("Arial", 28)
-
-# Carrega a logo do FabLab (Certifique-se de que "fablab_logo.png" está na pasta)
-LOGO_FILENAME = "fablab_logo.png"
-logo_fablab = None
-try:
-    if os.path.exists(LOGO_FILENAME):
-        logo_original = pygame.image.load(LOGO_FILENAME).convert_alpha()
-        l_altura = int(ALTURA * 0.15)
-        l_largura = int(logo_original.get_width() * (l_altura / logo_original.get_height()))
-        logo_fablab = pygame.transform.scale(logo_original, (l_largura, l_altura))
-    else:
-        print(f"Aviso: {LOGO_FILENAME} não encontrado.")
-except Exception as e:
-    print(f"Erro ao carregar imagem: {e}")
 
 # Estado global
 falando = False
@@ -111,20 +95,9 @@ def desenhar_rosto():
     else:
         cy = int(ALTURA * 0.35)
 
-    # 1. Desenha Logo no Topo
-    if logo_fablab:
-        lx = (LARGURA - logo_fablab.get_width()) // 2
-        tela.blit(logo_fablab, (lx, logo_y_pos))
-
     # 2. Desenha Cabeça (Círculo)
     cor_cabeca = VERMELHO_CLARO if falando else VERMELHO
     pygame.draw.circle(tela, cor_cabeca, (int(cx), int(cy)), int(raio))
-
-    # 3. Desenha Cubo na Testa
-    cube_size = int(raio * 0.25)
-    cube_x = cx - cube_size // 2
-    cube_y = cy - raio + int(raio * 0.15)
-    pygame.draw.rect(tela, AZUL_ESCURO_CUBE, (int(cube_x), int(cube_y), cube_size, cube_size))
 
     # 4. Desenha Olhos
     olho_r = int(raio * 0.12)
@@ -195,7 +168,7 @@ def gerar_resposta(pergunta):
         r = cliente.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "És o Assistente 001 do FabLab Livre SP. Simpático como o Baymax. Respostas curtas."},
+                {"role": "system", "content": "Você é o Assistente 001 do FabLab Livre SP. Simpático como o Baymax. Respostas curtas."},
                 {"role": "user", "content": pergunta}
             ],
             max_tokens=100
